@@ -179,6 +179,7 @@ config ARCH_MSM8960
 	select MSM_USE_USER_ACCESSIBLE_TIMERS
 	select MSM_CPU_PWRCTL
 	select MSM_LPM_TEST
+        select HAS_MACH_MEMUTILS
 
 config ARCH_MSM8930
 	bool "MSM8930"
@@ -261,14 +262,12 @@ config ARCH_MSM8974
 	select MSM_GPIOMUX
 	select MULTI_IRQ_HANDLER
 	select MSM_MULTIMEDIA_USE_ION
-	select PM_DEVFREQ
-	select MSM_DEVFREQ_CPUBW
 	select MSM_PIL
 	select MSM_SPM_V2
 	select MSM_L2_SPM
 	select MSM_NATIVE_RESTART
 	select MSM_RESTART_V2
-	select MSM_PM if PM
+	select MSM_PM8X60 if PM
 	select MAY_HAVE_SPARSE_IRQ
 	select SPARSE_IRQ
 	select MSM_RPM_SMD
@@ -282,11 +281,11 @@ config ARCH_MSM8974
 	select MEMORY_HOLE_CARVEOUT
 	select MSM_RPM_STATS_LOG
 	select QMI_ENCDEC
+	select DONT_MAP_HOLE_AFTER_MEMBANK0
 	select MSM_ULTRASOUND_B
+	select MSM_LPM_TEST
 	select MSM_RPM_LOG
 	select ARCH_WANT_KMAP_ATOMIC_FLUSH
-	select KRAIT_REGULATOR
-	select ENABLE_VMALLOC_SAVINGS
 
 config ARCH_APQ8084
 	bool "APQ8084"
@@ -299,7 +298,7 @@ config ARCH_APQ8084
 	select MULTI_IRQ_HANDLER
 	select MSM_NATIVE_RESTART
 	select MSM_RESTART_V2
-	select MSM_PM if PM
+	select MSM_PM8X60 if PM
 	select MAY_HAVE_SPARSE_IRQ
 	select SPARSE_IRQ
 	select REGULATOR
@@ -307,19 +306,12 @@ config ARCH_APQ8084
 	select ARCH_DMA_ADDR_T_64BIT if ARM_LPAE
 	select ARCH_WANT_KMAP_ATOMIC_FLUSH
 	select MEMORY_HOLE_CARVEOUT
+	select DONT_MAP_HOLE_AFTER_MEMBANK0
 	select QMI_ENCDEC
-	select MSM_SPM_V2
-	select MSM_L2_SPM
-	select MSM_RPM_SMD
-	select PM_DEVFREQ
-	select MSM_DEVFREQ_CPUBW
-	select ENABLE_VMALLOC_SAVINGS
 
 config ARCH_MPQ8092
 	bool "MPQ8092"
 	select ARCH_MSM_KRAITMP
-	select PM_DEVFREQ
-	select MSM_DEVFREQ_CPUBW
 	select GPIO_MSM_V3
 	select ARM_GIC
 	select MULTI_IRQ_HANDLER
@@ -338,7 +330,6 @@ config ARCH_FSM9900
 	select MSM_SCM
 	select MSM_GPIOMUX
 	select MULTI_IRQ_HANDLER
-	select PM_DEVFREQ
 	select MSM_PIL
 	select MSM_NATIVE_RESTART
 	select MSM_RESTART_V2
@@ -434,16 +425,11 @@ config ARCH_MSMKRYPTON
 	select MSM_NATIVE_RESTART
 	select MSM_RESTART_V2
 	select MSM_SPM_V2
-	select MSM_PM if PM
+	select MSM_PM8X60 if PM
 	select MULTI_IRQ_HANDLER
 	select GPIO_MSM_V3
 	select MAY_HAVE_SPARSE_IRQ
 	select SPARSE_IRQ
-	select MEMORY_HOLE_CARVEOUT
-	select QMI_ENCDEC
-	select MSM_CORTEX_A7
-	select PM_DEVFREQ
-	select MSM_DEVFREQ_CPUBW
 
 config ARCH_MSM8610
 	bool "MSM8610"
@@ -467,14 +453,15 @@ config ARCH_MSM8610
 	select MSM_RPM_SMD
 	select MSM_SPM_V2
 	select MSM_L2_SPM
-	select MSM_PM if PM
+	select MSM_PM8X60 if PM
 	select MEMORY_HOLE_CARVEOUT
+	select DONT_MAP_HOLE_AFTER_MEMBANK0
 	select MSM_BUS_SCALING
-	select MSM_CORTEX_A7
 	select CPU_FREQ_MSM
 	select CPU_FREQ
-	select PM_DEVFREQ
-	select MSM_DEVFREQ_CPUBW
+	select CPU_FREQ_GOV_USERSPACE
+	select CPU_FREQ_GOV_ONDEMAND
+	select CPU_FREQ_GOV_POWERSAVE
 	select MSM_PIL
 	select MSM_RUN_QUEUE_STATS
 	select ARM_HAS_SG_CHAIN
@@ -484,7 +471,6 @@ config ARCH_MSM8610
 	select MSM_JTAG_MM if CORESIGHT_ETM
 	select MSM_CPR_REGULATOR
 	select MSM_RPM_LOG
-	select MSM_IOMMU_SYNC
 	select MSM_RPM_STATS_LOG
 
 config ARCH_MSM8226
@@ -509,14 +495,14 @@ config ARCH_MSM8226
 	select MSM_RPM_SMD
 	select MSM_SPM_V2
 	select MSM_L2_SPM
-	select MSM_PM if PM
+	select MSM_PM8X60 if PM
 	select MEMORY_HOLE_CARVEOUT
+	select DONT_MAP_HOLE_AFTER_MEMBANK0
 	select MSM_BUS_SCALING
-	select MSM_CORTEX_A7
 	select CPU_FREQ_MSM
 	select CPU_FREQ
-	select PM_DEVFREQ
-	select MSM_DEVFREQ_CPUBW
+	select CPU_FREQ_GOV_USERSPACE
+	select CPU_FREQ_GOV_ONDEMAND
 	select MSM_PIL
 	select MSM_RUN_QUEUE_STATS
 	select ARM_HAS_SG_CHAIN
@@ -528,7 +514,7 @@ config ARCH_MSM8226
 	select MSM_RPM_LOG
 	select MSM_RPM_STATS_LOG
 	select ARCH_WANT_KMAP_ATOMIC_FLUSH
-	select ENABLE_VMALLOC_SAVINGS
+        select HAS_MACH_MEMUTILS
 
 config ARCH_MSMSAMARIUM
 	bool "MSMSAMARIUM"
@@ -537,22 +523,18 @@ config ARCH_MSMSAMARIUM
 	select ARM_GIC
 	select CPU_V7
 	select MSM_SCM
-	select PM_DEVFREQ
-	select MSM_DEVFREQ_CPUBW
-	select MSM_PIL
 	select MSM_GPIOMUX
 	select MULTI_IRQ_HANDLER
 	select MSM_SPM_V2
 	select MSM_L2_SPM
 	select MSM_NATIVE_RESTART
 	select MSM_RESTART_V2
-	select MSM_PM if PM
+	select MSM_PM8X60 if PM
 	select MAY_HAVE_SPARSE_IRQ
 	select SPARSE_IRQ
 	select ARM_HAS_SG_CHAIN
 	select MSM_RUN_QUEUE_STATS
 	select ARCH_WANT_KMAP_ATOMIC_FLUSH
-	select QMI_ENCDEC
 endmenu
 
 choice
@@ -567,12 +549,6 @@ config MSM_SOC_REV_A
 	select ARCH_MSM7X27A if ARCH_MSM7X27
 endchoice
 
-config MSM_HOTPLUG
-	bool "MSM Hotplug by @myfluxi"
-	default n
-	help
-		Intelligent CPU hotplug driver by myfluxi.
-		
 config MSM_KRAIT_TBB_ABORT_HANDLER
 	bool "Krait TBB/TBH data abort handler"
 	depends on ARCH_MSM_KRAIT
@@ -594,10 +570,6 @@ config  ARCH_MSM_SCORPION
 config  ARCH_MSM_KRAIT
 	bool
 	select ARM_L1_CACHE_SHIFT_6
-	select DEVFREQ_GOV_MSM_CPUBW_HWMON
-
-config  MSM_CORTEX_A7
-	bool
 
 config  MSM_SMP
 	select HAVE_SMP
@@ -681,7 +653,7 @@ config MSM_MPM_OF
 config MSM_LPM_TEST
 	bool "Low Power Mode test framework"
 	depends on MSM_RPM || MSM_RPM_SMD
-	depends on MSM_PM
+	depends on MSM_PM8X60
 	help
 	  LPM_TEST is a test framework that assists in exercising the low
 	  power mode algorithm on MSM targets. This test framework tracks
@@ -1147,6 +1119,7 @@ config MACH_FSM9XXX_SURF
 endmenu
 
 source "arch/arm/mach-msm/lge/Kconfig"
+
 config MSM_STACKED_MEMORY
 	bool "Stacked Memory"
 	default y
@@ -1348,14 +1321,6 @@ choice
 		help
 		  Say Y here if you want the debug print routines to direct
 		  their output to the serial port on MSM SAMARIUM devices.
-
-	config DEBUG_MSM8226_UART
-		bool "Kernel low-level debugging messages via MSM 8226 UART"
-		depends on ARCH_MSM8226
-		select MSM_HAS_DEBUG_UART_HS_V14
-		help
-		  Say Y here if you want the debug print routines to direct
-		  their output to the serial port on MSM 8226 devices.
 endchoice
 
 choice
@@ -1585,6 +1550,20 @@ config MSM_PCIE
 	  Enables the PCIe functionality by configures PCIe core on
 	  MSM chipset and by enabling the ARM PCI framework extension.
 
+config MSM_RPC_SDIO_XPRT
+	depends on MSM_SDIO_AL
+	default y
+	bool "MSM SDIO XPRT Layer"
+	help
+	  SDIO Transport Layer for RPC Rouer
+
+config MSM_RPC_SDIO_DEBUG
+	depends on MSM_RPC_SDIO_XPRT
+	default y
+	bool "MSM SDIO XPRT debug support"
+	help
+	  Support for debugging SDIO XPRT
+
 config MSM_SMD_DEBUG
 	depends on MSM_SMD
 	default y
@@ -1592,6 +1571,21 @@ config MSM_SMD_DEBUG
 	help
 	  Support for debugging the SMD for communication
 	  between the ARM9 and ARM11
+
+config MSM_SDIO_AL
+	depends on ((ARCH_MSM7X30 || MACH_MSM8X60_FUSN_FFA || MACH_TYPE_MSM8X60_FUSION) && HAS_WAKELOCK)
+	default y
+	tristate "SDIO-Abstraction-Layer"
+	help
+	  Support MSM<->MDM Communication over SDIO bus.
+	  MDM SDIO-Client should have pipes support.
+
+config MSM_SDIO_DMUX
+	bool "SDIO Data Mux Driver"
+	depends on MSM_SDIO_AL
+	default n
+	help
+	  Support Muxed Data Channels over SDIO interface.
 
 config MSM_BAM_DMUX
 	bool "BAM Data Mux Driver"
@@ -1673,6 +1667,16 @@ config MSM_SMD_NMEA
 
 	  If in doubt, say yes.
 
+config MSM_SDIO_TTY
+	bool "SDIO TTY Driver"
+	depends on MSM_SDIO_AL
+	default n
+	help
+	  Provides a TTY driver SDIO TTY
+	  This driver can be used by user space
+	  applications for passing data through the
+	  SDIO interface.
+
 config MSM_SMD_TTY
 	bool "SMD TTY Driver"
 	depends on MSM_SMD
@@ -1681,6 +1685,15 @@ config MSM_SMD_TTY
 	  Provides TTY interfaces to interact with the modem.
 
 	  If in doubt, say yes.
+
+config MSM_SMD_TTY_DS_LEGACY
+	bool "SMD TTY DS Legacy Driver"
+	depends on MSM_SMD_TTY
+	default n
+	help
+	  Provides DS TTY legacy interfaces to interact with the modem.
+
+	  if in doubt, say no.
 
 config MSM_SMD_QMI
 	bool "SMD QMI Driver"
@@ -1700,6 +1713,13 @@ config MSM_SMD_PKT
 
 	  If in doubt, say yes.
 
+config MSM_SDIO_CMUX
+	bool "SDIO CMUX Driver"
+	depends on MSM_SDIO_AL
+	default n
+	help
+	  Provides a Muxed port interface over SDIO QMI
+
 config MSM_DSPS
 	bool "Sensors DSPS driver"
 	depends on (MSM_PIL && (ARCH_MSM8X60 || ARCH_MSM8960))
@@ -1711,6 +1731,13 @@ config MSM_DSPS
 	  themself.
 	  The number of clocks and their name may vary between targets.
 	  It also triggers the PIL to load the DSPS firmware.
+
+config MSM_SDIO_CTL
+	bool "SDIO CTL Driver"
+	depends on MSM_SDIO_CMUX
+	default n
+	help
+	  Provides a binary SDIO control port interface.
 
 config MSM_ONCRPCROUTER
 	depends on MSM_SMD
@@ -1735,16 +1762,6 @@ config MSM_IPC_ROUTER_SMD_XPRT
 	bool "MSM SMD XPRT Layer"
 	help
 	  SMD Transport Layer for IPC Router
-
-config MSM_IPC_ROUTER_HSIC_XPRT
-	depends on USB_QCOM_IPC_BRIDGE
-	depends on MSM_IPC_ROUTER
-	bool "MSM HSIC XPRT Layer"
-	help
-	  HSIC Transport Layer that enables off-chip communication of
-	  IPC Router. When the HSIC endpoint becomes available, this layer
-	  registers the transport with IPC Router and enable message
-	  exchange.
 
 config MSM_IPC_ROUTER_SECURITY
 	depends on MSM_IPC_ROUTER
@@ -1844,6 +1861,31 @@ config MSM_RPCSERVER_HANDSET
 	  Support for receiving handset events like headset detect,
 	  headset switch and clamshell state.
 
+config MSM_RMT_STORAGE_CLIENT
+	depends on (ARCH_MSM && MSM_ONCRPCROUTER)
+	default n
+	bool "Remote Storage RPC client"
+	help
+	  Provide RPC mechanism for remote processors to access storage
+	  device on apps processor.
+
+config MSM_RMT_STORAGE_CLIENT_STATS
+	depends on (MSM_RMT_STORAGE_CLIENT && DEBUG_FS)
+	default n
+	bool "Remote storage RPC client performance statistics"
+	help
+	  Collects performance statistics and shows this information
+	  through a debugfs file rmt_storage_stats.
+
+config MSM_SDIO_SMEM
+        depends on MSM_SDIO_AL
+        default n
+        bool "SDIO SMEM for remote storage"
+        help
+          Copies data from remote MDM9K memory to local MSM8x60
+	  memory. Used by remote storage client to shadow
+	  MDM9K filesystem.
+
 config MSM_DALRPC
 	bool "DAL RPC support"
 	default n
@@ -1878,25 +1920,11 @@ config MSM_CPU_FREQ_MIN
 
 endif # CPU_FREQ_MSM
 
-config MSM_DEVFREQ_CPUBW
-	bool "Devfreq device for CPU<->DDR IB/AB BW voting"
-	depends on PM_DEVFREQ
-	select DEVFREQ_GOV_PERFORMANCE
-	select DEVFREQ_GOV_POWERSAVE
-	select DEVFREQ_GOV_USERSPACE
-	select DEVFREQ_GOV_MSM_CPUFREQ
-	default n
-	help
-	  Different devfreq governors use this devfreq device to make CPU to
-	  DDR IB/AB bandwidth votes. This driver provides a SoC topology
-	  agnostic interface to so that some of the devfreq governors can be
-	  shared across SoCs.
-
 config CPU_VOLTAGE_TABLE
 	bool "Enable CPU Voltage Table via sysfs for adjustements"
 	default n
 	help
-	  DTS based kernel User Votlage Control
+	  Krait User Votlage Control
 
 config MSM_AVS_HW
 	bool "Enable Adaptive Voltage Scaling (AVS)"
@@ -2320,8 +2348,8 @@ config SCORPION_Uni_45nm_BUG
 
 config MSM_BUSPM_DEV
 	tristate "MSM Bus Performance Monitor Kernel Module"
-	depends on MSM_BUS_SCALING
-	default n
+	depends on (ARCH_MSM8X60 || ARCH_MSM8960 || ARCH_MSM8974)
+	default m
 	help
 	  This kernel module is used to mmap() hardware registers for the
 	  performance monitors, counters, etc. The module can also be used to
@@ -2400,7 +2428,7 @@ config MSM_PM2
 	depends on PM
 	bool
 
-config MSM_PM
+config MSM_PM8X60
 	depends on PM
 	bool
 
@@ -2996,18 +3024,38 @@ config MSM_CPU_PWRCTL
 	  stand alone power collapse operation. Selecting this option
 	  ensures that they are always off.
 
+config FORCE_FAST_CHARGE
+	bool "Increase input current limit to 900mA when charging via USB"
+	default y
+	help
+	  A simple sysfs interface to increase input current limit to
+	  900mA when charging via USB.
+
+config MSM_SLEEPER
+	bool "CPU hotplug driver"
+	default y
+	help
+	  CPU hotplug driver 
+	  
+config INTELLI_PLUG
+	bool "Intelli hotplug driver"
+	depends on HOTPLUG_CPU
+	default y
+	help
+	  An intelligent cpu hotplug driver for
+	  Low Latency Frequency Transition capable processors.
+
+config HAS_MACH_MEMUTILS
+	default n
+	bool "Motorola MSM memcpy enhancements"
+	help
+	Faster memcpy performance for Krait
+
 config MSM_UARTDM_Core_v14
 	bool "Use MSM BLSP based HSUART Core v1.4"
 	depends on SERIAL_MSM_HS
 	help
 		Select if BLSP based UART Core v.14 or higher is present.
-
-config MSM_COMMON_LOG
-	bool "Use to export symbols for parsing memory dump"
-	help
-	 Use this to export symbols to a memory dump table. This table
-	 can be used by post analysis tools to extract information from
-	 memory when device crashes.
 
 config MSM_BOOT_STATS
 	bool "Use MSM boot stats reporting"
@@ -3049,19 +3097,4 @@ config WALL_CLK_SYSFS
 	 Support the wallclk directory in sysfs filesystem to enable the
 	 wall clock simulation and read the current SFN.
 
-config KRAIT_REGULATOR
-	bool "Support Kraits powered via ganged regulators in the pmic"
-	help
-	 Certain MSMs have the Krait CPUs powered via a single supply
-	 line from the PMIC. This supply line is powered by multiple
-	 regulators running in ganged mode inside the PMIC. Enable
-	 this option to support such configurations.
 endif
-
-config KERNEL_TEXT_MPU_PROT
-        bool "Enable xpu protection of kernel r/o sections"
-        help
-          Enables xpu protection of kernel code and read-only data
-          sections early in boot. Read access is permitted to
-          all masters; Write access is only permited to the
-          secure world.
