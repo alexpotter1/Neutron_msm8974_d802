@@ -22,6 +22,10 @@ config ARM
 	select ARCH_BINFMT_ELF_RANDOMIZE_PIE
 	select HAVE_GENERIC_DMA_COHERENT
 	select HAVE_KERNEL_GZIP
+<<<<<<< HEAD
+=======
+	select HAVE_KERNEL_LZO
+>>>>>>> b0759b6... arm: add support for LZ4-compressed kernel
 	select HAVE_KERNEL_LZ4
 	select HAVE_KERNEL_LZMA
 	select HAVE_KERNEL_LZO
