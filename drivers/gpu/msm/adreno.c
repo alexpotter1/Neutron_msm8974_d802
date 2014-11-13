@@ -250,7 +250,7 @@ static const struct {
 };
 
 /* Nice level for the higher priority GPU start thread */
-static int _wake_nice = -7;
+static unsigned int _wake_nice = -7;
 
 /* Number of milliseconds to stay active active after a wake on touch */
 static unsigned int _wake_timeout = 100;
@@ -2123,7 +2123,7 @@ error_clk_off:
  * @priority:  Boolean flag to specify of the start should be scheduled in a low
  * latency work queue
  *
- * Power up the GPU and initialize it.  If priority is specified then elevate
+ * Power up the GPU and initialize it. If priority is specified then elevate
  * the thread priority for the duration of the start operation
  */
 static int adreno_start(struct kgsl_device *device, int priority)
@@ -2147,8 +2147,10 @@ static int adreno_stop(struct kgsl_device *device)
 {
 	struct adreno_device *adreno_dev = ADRENO_DEVICE(device);
 
-	if (adreno_dev->drawctxt_active)
-		kgsl_context_put(&adreno_dev->drawctxt_active->base);
+	if (!test_bit(ADRENO_DEVICE_STARTED, &adreno_dev->priv))
+		return 0;
+
+	kgsl_pwrctrl_enable(device);
 
 	adreno_dev->drawctxt_active = NULL;
 
@@ -3416,13 +3418,6 @@ static inline s64 adreno_ticks_to_us(u32 ticks, u32 freq)
 	return ticks / freq;
 }
 
-/**
- * adreno_power_stats() - Reads the counters needed for freq decisions
- * @device: Pointer to device whose counters are read
- * @stats: Pointer to stats set that needs updating
- * Power: The caller is expected to be in a clock enabled state as this
- * function does reg reads
- */
 static void adreno_power_stats(struct kgsl_device *device,
 				struct kgsl_power_stats *stats)
 {
@@ -3431,6 +3426,14 @@ static void adreno_power_stats(struct kgsl_device *device,
 	struct adreno_busy_data busy_data;
 
 	memset(stats, 0, sizeof(*stats));
+
+	/*
+	 * If we're not currently active, there shouldn't have been
+	 * any cycles since the last time this function was called.
+	 */
+
+	if (device->state != KGSL_STATE_ACTIVE)
+		return;
 
 	/* Get the busy cycles counted since the counter was last reset */
 	adreno_dev->gpudev->busy_cycles(adreno_dev, &busy_data);
