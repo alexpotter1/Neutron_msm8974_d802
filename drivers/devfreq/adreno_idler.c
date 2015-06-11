@@ -35,29 +35,29 @@
 #include <linux/msm_adreno_devfreq.h>
 
 #define ADRENO_IDLER_MAJOR_VERSION 1
-#define ADRENO_IDLER_MINOR_VERSION 0
+#define ADRENO_IDLER_MINOR_VERSION 1
 
 /* stats.busy_time threshold for determining if the given workload is idle.
    Any workload higher than this will be treated as non-idle workload,
    meaning the higher it gets, the slower & low-power it would get. */
-static int idleworkload = 5000;
-module_param_named(adreno_idler_idleworkload, idleworkload, int, 0664);
+static unsigned long idleworkload = 5000;
+module_param_named(adreno_idler_idleworkload, idleworkload, ulong, 0664);
 
 /* Numbers to wait before entering idle.
    The idlewait'th events before must be all idle before Adreno idler ramps
    down the frequency.
    This implementation is to prevent micro-lags on scrolling or playing games,
    meaning the lower it gets, the slower & low-power it would get. */
-static int idlewait = 20;
-module_param_named(adreno_idler_idlewait, idlewait, int, 0664);
+static unsigned int idlewait = 20;
+module_param_named(adreno_idler_idlewait, idlewait, uint, 0664);
 
 /* Taken from ondemand */
-static int downdifferenctial = 20;
-module_param_named(adreno_idler_downdifferenctial, downdifferenctial, int, 0664);
+static unsigned int downdifferenctial = 20;
+module_param_named(adreno_idler_downdifferenctial, downdifferenctial, uint, 0664);
 
 /* Master switch to activate whole routine */
-static int adreno_idler_active = 1;
-module_param_named(adreno_idler_active, adreno_idler_active, int, 0664);
+static bool adreno_idler_active = true;
+module_param_named(adreno_idler_active, adreno_idler_active, bool, 0664);
 
 static unsigned int idlecount = 0;
 
@@ -83,10 +83,7 @@ int adreno_idler(struct devfreq_dev_status stats, struct devfreq *devfreq,
 			return 1;
 		}
 	} else {
-		/* This is the case where msm-adreno-tz don't use the lowest frequency.
-		   Mimic this behavior by bumping up the frequency. */
 		idlecount = 0;
-		*freq = devfreq->profile->freq_table[devfreq->profile->max_state - 2];
 		/* Do not return 1 here and allow rest of the algorithm to
 		   figure out the appropriate frequency for current workload.
 		   It can even set it back to lowest frequency. */
