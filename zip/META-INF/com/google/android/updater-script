@@ -1,7 +1,3 @@
-ui_print("------------------------------------------------")
-ui_print("QuantumKernel by Alex Potter (alexpotter1)")
-ui_print("For LG G2 D802")
-ui_print("------------------------------------------------")
 ui_print("Installing QuantumKernel");
 ui_print("25%...");
 ui_print("50%...");
