@@ -1971,7 +1971,7 @@ static int smb349_aicl_dynamic_switch(struct smb349_struct *smb349_chg, int mode
 static void smb349_dump_register(struct smb349_struct *smb349_chg, char *msg)
 {
 	int i;
-	u8 val;
+	u8 val = 0;
 
 	pr_info("%s\n", msg);
 	for (i = 0 ; i < ARRAY_SIZE(smb349_debug_regs) ; i++) {

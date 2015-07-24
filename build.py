@@ -120,7 +120,7 @@ if os.path.isfile("include/generated/compile.h"):
         except TypeError:
             print("You didn't type an integer")
     
-        build(coreChoice, cleanBuild=False)     
+        build(coreChoice, cleanBuild=False, LocalVersionArg=lines[1])     
         
      
 ramdiskChoice = raw_input("Do you want to generate a new ramdisk? (y/n): ").upper()
