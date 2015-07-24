@@ -2061,7 +2061,8 @@ exit:
 	printk(KERN_INFO "MS_CardInit end\n");
 	return result;
 }
-
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wframe-larger-than="
 static int ene_ms_init(struct us_data *us)
 {
 	struct bulk_cb_wrap *bcb = (struct bulk_cb_wrap *) us->iobuf;
@@ -2116,7 +2117,7 @@ static int ene_ms_init(struct us_data *us)
 
 	return USB_STOR_TRANSPORT_GOOD;
 }
-
+#pragma GCC diagnostic pop
 static int ene_sd_init(struct us_data *us)
 {
 	int result;
