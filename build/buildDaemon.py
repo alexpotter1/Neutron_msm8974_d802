@@ -32,7 +32,7 @@ class InitStub:
         self.cursor = None
         self.CPUcores = None
         self.CPUversion = None
-        self.localversion = None
+        self.localversion = "QuantumKernel-"
         self.dt = None
         self.lines = None
         self.spinnerShutdown = None
@@ -216,7 +216,7 @@ class InitStub:
 
                     pos += 1
 
-            self.localversion = str(input("Enter new version string: "))
+            self.localversion += str(input("Enter new version string: "))
             self.buildInit(localversionarg=1) # use the localversion that the user entered
         else:
             self.buildInit(localversionarg=0) # use the localversion that is stored in SQLite db
@@ -269,7 +269,7 @@ class InitStub:
     def buildInit(self, localversionarg):
         if localversionarg == 0:
             localversion = str(self.data[0][2])
-            self.localversion = localversion
+            self.localversion += localversion
             buildThread = threading.Thread(target=self.build)
             buildThread.start()
         else:
@@ -342,11 +342,15 @@ class InitStub:
             print(str(line.rstrip().decode('utf-8')))
             outLog.append(" " + str(line.rstrip()))
         lastFile = None
+        succeed = None
         for i, s in enumerate(outLog):
             if "Error" in s or "error" in s or "ERROR" in s:
                 lastFile = outLog[i-1]
 
-        if lastFile == None:
+            if "arch/arm/boot/zImage-dtb is ready" in s:
+                succeed = outLog[i]
+
+        if lastFile == None or succeed is not None:
             print(bcolours.OKGREEN + "OK: Build succeeded" + bcolours.ENDC)
         else:
             time = datetime.datetime.now().strftime("%a %d %b %H:%M")
