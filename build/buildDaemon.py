@@ -244,6 +244,7 @@ class InitStub:
                 print("---------------------------------------------------------------------------------")
 
                 self.cursor.execute('DELETE FROM {tn} WHERE {cn}="Linker Error"'.format(tn='BuildFailure', cn="FailureReason"))
+                self.conn.commit()
                 self.setupBuild(error=1)
         else:
             print(bcolours.FAIL + "An incomplete build was detected." + bcolours.ENDC)
@@ -254,6 +255,7 @@ class InitStub:
             print("---------------------------------------------------------------------------------")
 
             self.cursor.execute('DELETE FROM {tn} WHERE {cn}="Compile Error"'.format(tn='BuildFailure', cn='FailureReason'))
+            self.conn.commit()
             clean = input("Do you want to discard this build? (y/n): ")
             print(clean)
             if clean.upper() == "N":
