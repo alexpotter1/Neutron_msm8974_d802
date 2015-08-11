@@ -270,8 +270,8 @@ class InitStub:
         if localversionarg == 0:
             localversion = str(self.data[0][2])
             self.localversion += localversion
-            buildThread = threading.Thread(target=self.build)
-            buildThread.start()
+            makeThread = threading.Thread(target=self.buildMake)
+            makeThread.start()
         else:
             localversion = self.localversion
         subprocess.call("clear", shell=True)
@@ -324,6 +324,15 @@ class InitStub:
             print(bcolours.OKGREEN + "OK: Kernel Version set correctly" + bcolours.ENDC)
         else:
             print(bcolours.WARNING + "WARNING: Kernel Version not set correctly" + bcolours.ENDC)
+
+        makeThread = threading.Thread(target=self.buildMake)
+        makeThread.start()
+
+    def buildMake(self):
+        import time
+        import sqlite3
+        import datetime
+        import subprocess
         time.sleep(0.5)
         print("---------------------------------------------------------------------------------")
         print(bcolours.BOLD + "Building..." + bcolours.ENDC)
