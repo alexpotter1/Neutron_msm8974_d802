@@ -34,6 +34,7 @@ class InitStub:
         self.CPUversion = None
         self.localversion = "-QuantumKernel-"
         self.dt = None
+        self.dtbSucceeded = None
         self.lines = None
         self.spinnerShutdown = None
         self.data = None
@@ -204,17 +205,27 @@ class InitStub:
                 dtcFile = ['msm8974-g2-open_com', 'msm8974-v2-2-g2-open_com', 'msm8974-v2-g2-open_com']
                 pos = 0
                 dt = ""
+                self.dtbSucceeded = 0
                 while pos <= 2:
                     p = subprocess.Popen("scripts/dtc/dtc -I dts -O dtb -o arch/arm/boot/%s.dtb arch/arm/boot/dts/lge/msm8974-g2/msm8974-g2-open_com/%s.dts" % (dtcFile[pos], dtcFile[pos]),
                     shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                     for line in iter(p.stdout.readline, b''):
                         dt = line.rstrip()
-                    if dt != "":
-                        print(bcolours.WARNING + "WARNING: Manual DT generation failed" + bcolours.ENDC)
-                    else:
-                        print(bcolours.OKGREEN + "OK: DT image generated" + bcolours.ENDC)
+                    if dt == "":
+                        self.dtbSucceeded += 1
 
                     pos += 1
+
+                if self.dtbSucceeded == 3:
+                    p = subprocess.Popen("executables/dtbTool -s 2048 -o executables/dt.img -p scripts/dtc/ arch/arm/boot/", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    output, err = p.communicate()
+
+                    if "Found 3 unique" in str(output):
+                        print(bcolours.OKGREEN + "OK: device tree image generated successfully" + bcolours.ENDC)
+                    else:
+                        print(bcolours.WARNING + "WARNING: Not all device tree binaries exist but device tree image generated successfully" + bcolours.ENDC)
+                else:
+                    print(bcolours.FAIL + "FAIL: device tree image generation failed" + bcolours.ENDC)
 
             self.localversion += str(input("Enter new version string: "))
             self.buildInit(localversionarg=1) # use the localversion that the user entered
