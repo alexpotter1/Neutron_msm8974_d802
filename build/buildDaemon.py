@@ -32,7 +32,7 @@ class InitStub:
         self.cursor = None
         self.CPUcores = None
         self.CPUversion = None
-        self.localversion = "QuantumKernel-"
+        self.localversion = "-QuantumKernel-"
         self.dt = None
         self.lines = None
         self.spinnerShutdown = None
