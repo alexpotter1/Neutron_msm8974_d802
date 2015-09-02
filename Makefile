@@ -248,6 +248,7 @@ HOSTCC       = gcc
 HOSTCXX      = g++
 HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -Ofast -fomit-frame-pointer
 HOSTCXXFLAGS = -Ofast -fgraphite -fgraphite-identity
+KERNELFLAGS  = -mcpu=cortex-a15
 
 # Decide whether to build built-in, modular, or both.
 # Normally, just do built-in.
