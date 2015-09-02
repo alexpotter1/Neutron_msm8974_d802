@@ -567,6 +567,12 @@ config MSM_SOC_REV_A
 	select ARCH_MSM7X27A if ARCH_MSM7X27
 endchoice
 
+config MSM_HOTPLUG
+	bool "MSM Hotplug by @myfluxi"
+	default n
+	help
+		Intelligent CPU hotplug driver by myfluxi.
+		
 config MSM_KRAIT_TBB_ABORT_HANDLER
 	bool "Krait TBB/TBH data abort handler"
 	depends on ARCH_MSM_KRAIT
