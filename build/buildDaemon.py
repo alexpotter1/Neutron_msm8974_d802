@@ -400,7 +400,7 @@ class InitStub:
         os.system("rm -f zip/boot.img && rm -f zip/Quantum*")
         os.system("mv boot_bumped.img zip/boot.img")
         try:
-            cmd = "cd zip && zip -r -9 '" + (str(self.localversion) + ".zip'") + " *"
+            cmd = 'cd zip && zip -r -9 "' + (str(self.localversion)[1:] + '.zip') + '" *'
             os.system(cmd)
         except TypeError:
             cmd = 'cd zip && zip -r -9 "QuantumKernel-undefined-cm12.zip" *'
