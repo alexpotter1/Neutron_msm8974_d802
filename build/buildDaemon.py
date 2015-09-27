@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 '''
-Build Daemon for the QuantumKernel compilation process.
+Build Daemon for the Neutron compilation process.
 Designed to run on Debian (Linux) enviroments;  this will fail on other OSes.
 Copyright Alex Potter 2015.
 '''
@@ -32,7 +32,7 @@ class InitStub:
         self.cursor = None
         self.CPUcores = None
         self.CPUversion = None
-        self.localversion = "-QuantumKernel-"
+        self.localversion = "-Neutron-"
         self.dt = None
         self.dtbSucceeded = None
         self.lines = None
@@ -109,7 +109,7 @@ class InitStub:
             print(bcolours.OKGREEN + "OK: Toolchain path" + bcolours.ENDC)
             print(bcolours.OKBLUE + "Using toolchain path %s" % CROSS_COMPILE + bcolours.ENDC)
 
-            self.conn = sqlite3.connect("build/quantumBuild.db")
+            self.conn = sqlite3.connect("build/neutronBuild.db")
             self.cursor = self.conn.cursor()
             self.cursor.execute("CREATE TABLE IF NOT EXISTS UserDefaults (VariableKey TEXT, StringChoice TEXT);")
             self.cursor.execute('SELECT * FROM {tn} WHERE {cn}="SaberMod"'.format(tn="UserDefaults", cn="VariableKey"))
@@ -156,7 +156,7 @@ class InitStub:
                 if os.path.isfile("arch/arm/boot/zImage"):
                     subprocess.call("rm arch/arm/boot/zImage && rm arch/arm/boot/zImage-dtb", shell=True)
                 if os.path.isfile("zip/boot.img"):
-                    subprocess.call("rm zip/Quantum*", shell=True)
+                    subprocess.call("rm zip/Neutron*", shell=True)
                     subprocess.call("rm zip/boot.img", shell=True)
                     subprocess.call("rm boot.img", shell=True)
                 print(bcolours.OKGREEN + "OK: Cleaned build directories" + bcolours.ENDC)
@@ -234,7 +234,7 @@ class InitStub:
 
     def setupBuildPrelim(self):
         print("---------------------------------------------------------------------------------")
-        print(bcolours.HEADER + "QuantumKernel Build preparation" + bcolours.ENDC)
+        print(bcolours.HEADER + "Neutron Build preparation" + bcolours.ENDC)
         print("---------------------------------------------------------------------------------")
         time.sleep(1)
 
@@ -287,7 +287,7 @@ class InitStub:
             localversion = self.localversion
         subprocess.call("clear", shell=True)
         print("---------------------------------------------------------------------------------")
-        print(bcolours.HEADER + "QuantumKernel Build Process" + bcolours.ENDC)
+        print(bcolours.HEADER + "Neutron Build Process" + bcolours.ENDC)
         print("---------------------------------------------------------------------------------")
         print(bcolours.BOLD + "BUILD VARIABLES" + bcolours.ENDC)
 
@@ -397,13 +397,13 @@ class InitStub:
 
         print("Packing into flashable zip...")
         time.sleep(1)
-        os.system("rm -f zip/boot.img && rm -f zip/Quantum*")
+        os.system("rm -f zip/boot.img && rm -f zip/Neutron*")
         os.system("mv boot_bumped.img zip/boot.img")
         try:
             cmd = 'cd zip && zip -r -9 "' + (str(self.localversion)[1:] + '.zip') + '" *'
             os.system(cmd)
         except TypeError:
-            cmd = 'cd zip && zip -r -9 "QuantumKernel-undefined-cm12.zip" *'
+            cmd = 'cd zip && zip -r -9 "Neutron-undefined-cm12.zip" *'
             os.system(cmd)
 
         self.spinnerShutdown = 1
@@ -419,7 +419,7 @@ class InitStub:
 # Initial display of program in terminal
 subprocess.call("clear", shell=True)
 print("---------------------------------------------------------------------------------")
-print(bcolours.HEADER + "QuantumKernel d802 Debian/Linux build tool by Alex Potter (alexpotter1)" + bcolours.ENDC)
+print(bcolours.HEADER + "Neutron d802 Debian/Linux kernel build tool by Alex Potter (alexpotter1)" + bcolours.ENDC)
 print(bcolours.HEADER + "Please only run on Linux (Debian, Ubuntu, etc)." + bcolours.ENDC)
 print(bcolours.HEADER + "Version v2.0" + bcolours.ENDC)
 print("---------------------------------------------------------------------------------")
