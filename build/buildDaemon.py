@@ -15,6 +15,7 @@ import sqlite3
 import threading
 import re
 import itertools
+import glob
 
 class bcolours:
     HEADER = '\033[95m'
@@ -141,6 +142,11 @@ class InitStub:
 
     def setupBuild(self, error=None):
         time.sleep(1)
+        if os.path.isfile("arch/arm/boot/zImage-dtb"):
+            choice = input("Previous zImage detected. Do you want to make clean? (y/n): ")
+            if choice.upper() == "N":
+                error = 1
+                self.buildInit(zImageExists=True)
         if error == None:
             print("Last build was successful. Running make clean...")
             self.spinnerShutdown = 0
@@ -277,47 +283,88 @@ class InitStub:
                 raise SystemExit
 
 
-    def buildInit(self, localversionarg):
-        if localversionarg == 0:
-            localversion = str(self.data[0][2])
-            self.localversion += localversion
-            makeThread = threading.Thread(target=self.buildMake)
-            makeThread.start()
+    def buildInit(self, localversionarg=0, zImageExists=False):
+        if zImageExists == True:
+            self.createFlashableZip()
         else:
-            localversion = self.localversion
-        subprocess.call("clear", shell=True)
-        print("---------------------------------------------------------------------------------")
-        print(bcolours.HEADER + "Neutron Build Process" + bcolours.ENDC)
-        print("---------------------------------------------------------------------------------")
-        print(bcolours.BOLD + "BUILD VARIABLES" + bcolours.ENDC)
+            if localversionarg == 0:
+                localversion = str(self.data[0][2])
+                self.localversion += localversion
+                makeThread = threading.Thread(target=self.buildMake)
+                makeThread.start()
+            else:
+                localversion = self.localversion
+            subprocess.call("clear", shell=True)
+            print("---------------------------------------------------------------------------------")
+            print(bcolours.HEADER + "Neutron Build Process" + bcolours.ENDC)
+            print("---------------------------------------------------------------------------------")
+            print(bcolours.BOLD + "BUILD VARIABLES" + bcolours.ENDC)
 
-        self.cursor.execute('SELECT * FROM {tn} WHERE {cn}="SaberMod"'.format(tn="UserDefaults", cn="VariableKey"))
-        data = self.cursor.fetchall()
+            self.cursor.execute('SELECT * FROM {tn} WHERE {cn}="SaberMod"'.format(tn="UserDefaults", cn="VariableKey"))
+            data = self.cursor.fetchall()
 
-        path = str(os.environ.get('CROSS_COMPILE'))
-        version = re.search('el/(.*)/b', path)
-        if len(data) == 0:
-            print(bcolours.OKBLUE + "Toolchain version: %s" % str(version.group(1)) + bcolours.ENDC)
-        else:
-            print(bcolours.OKBLUE + "Toolchain version: %s" % str(version.group(1)) + " " + "SaberMod GCC" + bcolours.ENDC)
+            path = str(os.environ.get('CROSS_COMPILE'))
+            version = re.search('el/(.*)/b', path)
+            if len(data) == 0:
+                print(bcolours.OKBLUE + "Toolchain version: %s" % str(version.group(1)) + bcolours.ENDC)
+            else:
+                print(bcolours.OKBLUE + "Toolchain version: %s" % str(version.group(1)) + " " + "SaberMod GCC" + bcolours.ENDC)
 
-        print(bcolours.OKBLUE + "Toolchain path: %s" % path + bcolours.ENDC)
-        print(bcolours.OKBLUE + "Kernel version: %s" % localversion + bcolours.ENDC)
-        p = subprocess.Popen("uname -o -n -i -v -r", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        for line in iter(p.stdout.readline, b''):
-            self.lines = line.rstrip()
-        print(bcolours.OKBLUE + "Host: %s" % str(self.lines.decode('utf-8')) + bcolours.ENDC)
-        print(bcolours.OKBLUE + "CPU: %s with %i core(s)" % (self.CPUversion.decode("utf-8"), self.CPUcores) + bcolours.ENDC)
-        print("                                                                             ")
-        OK = input("If this is okay, press Enter to continue or Q to quit...")
-        if OK.upper() == "Q":
-            raise SystemExit
-        else:
-            self.conn.close()
-            buildThread = threading.Thread(target=self.build)
-            buildThread.start()
+            print(bcolours.OKBLUE + "Toolchain path: %s" % path + bcolours.ENDC)
+            print(bcolours.OKBLUE + "Kernel version: %s" % localversion + bcolours.ENDC)
+            p = subprocess.Popen("uname -o -n -i -v -r", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            for line in iter(p.stdout.readline, b''):
+                self.lines = line.rstrip()
+            print(bcolours.OKBLUE + "Host: %s" % str(self.lines.decode('utf-8')) + bcolours.ENDC)
+            print(bcolours.OKBLUE + "CPU: %s with %i core(s)" % (self.CPUversion.decode("utf-8"), self.CPUcores) + bcolours.ENDC)
+            print("                                                                             ")
+            OK = input("If this is okay, press Enter to continue or Q to quit...")
+            if OK.upper() == "Q":
+                raise SystemExit
+            else:
+                self.conn.close()
+                buildThread = threading.Thread(target=self.build)
+                buildThread.start()
 
+    def createFlashableZip(self):
+        print(bcolours.OKBLUE + "Moving kernel modules..." + bcolours.ENDC)
+        time.sleep(0.5)
+        subprocess.call('find . -name "*.ko" -type f -exec cp {} zip/modules \;', shell=True)
 
+        print(bcolours.OKBLUE + "Packing into flashable zip..." + bcolours.ENDC)
+        time.sleep(0.5)
+        subprocess.call("rm zip/Neutron*.zip", shell=True)
+        try:
+            subprocess.call("cp arch/arm/boot/zImage-dtb zip/setup/zImage-dtb", shell=True)
+            cmd = 'cd zip && zip -r -9 "' + (str(self.localversion)[1:] + '.zip') + '" *'
+            os.system(cmd)
+        except TypeError:
+            cmd = 'cd zip && zip -r -9 "Neutron-undefined.zip" *'
+            os.system(cmd)
+
+        print(bcolours.OKBLUE + "Signing zip file..." + bcolours.ENDC)
+        if not os.path.isdir('build/openssl'):
+            subprocess.call("mkdir -p build/openssl", shell=True)
+
+        self.spinnerShutdown = 1
+
+        if os.listdir('build/openssl') == []:
+            print("Generating OpenSSL certificates...")
+            time.sleep(0.3)
+            print("Follow the prompts on screen.")
+            time.sleep(2)
+            subprocess.call("cd build/openssl && openssl genrsa -out sign.key 8192; openssl req -new -key sign.key -out request.pem; openssl x509 -req -days 9999 -in request.pem -signkey sign.key -out certificate.pem; openssl pkcs8 -topk8 -outform DER -in sign.key -inform PEM -out key.pk8 -nocrypt", shell=True)
+
+        path = glob.glob("zip/*.zip")[0]
+        signed_name = str(self.localversion)[1:] + "-signed" + ".zip"
+        subprocess.call("java -jar build/signapk.jar build/openssl/certificate.pem build/openssl/key.pk8 %s zip/%s" % (path, signed_name), shell=True)
+        #subprocess.call("build/zipadjust zip/Neutron-signed.zip zip/Neutron-fixed.zip; rm zip/Neutron-signed.zip", shell=True)
+        #subprocess.call("java -jar build/minsignapk.jar build/openssl/certificate.pem build/openssl/key.pk8 zip/Neutron-fixed.zip zip/Neutron-%s; rm zip/Neutron-fixed.zip" % signed_name, shell=True)
+
+        print(bcolours.OKGREEN + "Done! Closing processes..." + bcolours.ENDC)
+        subprocess.call("rm include/generated/compile.h", shell=True)
+        time.sleep(2)
+        raise SystemExit
 
     def build(self):
         import time
@@ -383,36 +430,8 @@ class InitStub:
             self.conn.close()
             raise SystemExit
 
-        print("Generating boot.img")
-        time.sleep(1)
-        if os.path.isfile("arch/arm/boot/zImage"):
-             subprocess.call('executables/mkbootimg_dtb --kernel arch/arm/boot/zImage-dtb --ramdisk executables/ramdisk.gz --cmdline "console=ttyHSL0,115200,n8 androidboot.hardware=g2 user_debug=31 msm_rtb.filter=0x0 mdss_mdp.panel=1:dsi:0:qcom,mdss_dsi_g2_lgd_cmd androidboot.selinux=enforcing" --base 0x00000000 --pagesize 2048 --offset 0x05000000 --tags-addr 0x04800000 --dt executables/dt.img -o boot.img', shell=True)
-        else:
-             print("Error...zImage doesn't exist, the build probably failed")
-             raise SystemExit
 
-        print("Bumping...")
-        time.sleep(1)
-        subprocess.call("python executables/open_bump.py boot.img", shell=True)
-
-        print("Packing into flashable zip...")
-        time.sleep(1)
-        os.system("rm -f zip/boot.img && rm -f zip/Neutron*")
-        os.system("mv boot_bumped.img zip/boot.img")
-        try:
-            cmd = 'cd zip && zip -r -9 "' + (str(self.localversion)[1:] + '.zip') + '" *'
-            os.system(cmd)
-        except TypeError:
-            cmd = 'cd zip && zip -r -9 "Neutron-undefined-cm12.zip" *'
-            os.system(cmd)
-
-        self.spinnerShutdown = 1
-
-        print(bcolours.OKGREEN + "Done! Closing processes..." + bcolours.ENDC)
-        subprocess.call("rm include/generated/compile.h", shell=True)
-        subprocess.call("rm .build.py.conf", shell=True)
-        time.sleep(2)
-        raise SystemExit
+        self.createFlashableZip()
 
 
 
@@ -421,7 +440,7 @@ subprocess.call("clear", shell=True)
 print("---------------------------------------------------------------------------------")
 print(bcolours.HEADER + "Neutron d802 Debian/Linux kernel build tool by Alex Potter (alexpotter1)" + bcolours.ENDC)
 print(bcolours.HEADER + "Please only run on Linux (Debian, Ubuntu, etc)." + bcolours.ENDC)
-print(bcolours.HEADER + "Version v2.0" + bcolours.ENDC)
+print(bcolours.HEADER + "Version v3.0" + bcolours.ENDC)
 print("---------------------------------------------------------------------------------")
 
 app = InitStub()
