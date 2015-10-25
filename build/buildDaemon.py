@@ -327,6 +327,10 @@ class InitStub:
                 buildThread.start()
 
     def createFlashableZip(self):
+        self.spinnerShutdown = 1
+
+        subprocess.call("cp executables/dt.img zip/setup/dt.img", shell=True)
+
         print(bcolours.OKBLUE + "Moving kernel modules..." + bcolours.ENDC)
         time.sleep(0.5)
         subprocess.call('find . -name "*.ko" -type f -exec cp {} zip/modules \;', shell=True)
@@ -346,7 +350,6 @@ class InitStub:
         if not os.path.isdir('build/openssl'):
             subprocess.call("mkdir -p build/openssl", shell=True)
 
-        self.spinnerShutdown = 1
 
         if os.listdir('build/openssl') == []:
             print("Generating OpenSSL certificates...")
@@ -362,6 +365,7 @@ class InitStub:
         #subprocess.call("java -jar build/minsignapk.jar build/openssl/certificate.pem build/openssl/key.pk8 zip/Neutron-fixed.zip zip/Neutron-%s; rm zip/Neutron-fixed.zip" % signed_name, shell=True)
 
         print(bcolours.OKGREEN + "Done! Closing processes..." + bcolours.ENDC)
+        subprocess.call("cd zip; find . -type f -not -name '*-signed.zip' | xargs rm", shell=True)
         subprocess.call("rm include/generated/compile.h", shell=True)
         time.sleep(2)
         raise SystemExit
