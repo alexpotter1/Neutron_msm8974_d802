@@ -86,6 +86,11 @@ GTAGS
 \#*#
 executables/**
 executables
-build/quantumBuild.db
-build/**
-build
+build/openssl
+arch/arm/boot/compressed/piggy.lz4
+boot.img
+build/neutronBuild.db
+kernel/hz.bc
+zip/META-INF/*.RSA
+zip/META-INF/*.SF
+zip/META-INF/*.MF
