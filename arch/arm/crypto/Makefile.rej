@@ -1,0 +1,6 @@
+--- arch/arm/crypto/Makefile
++++ arch/arm/crypto/Makefile
+@@ -0,0 +1,3 @@
++obj-$(CONFIG_CRYPTO_TRESOR) += tresor.o
++
++tresor-y := tresor_asm.o tresor_glue.o tresor_key.o

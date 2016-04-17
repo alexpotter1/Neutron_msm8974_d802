@@ -1,0 +1,23 @@
+--- crypto/testmgr.c
++++ crypto/testmgr.c
+@@ -129,6 +132,20 @@ struct alg_test_desc {
+ 
+ static unsigned int IDX[8] = { IDX1, IDX2, IDX3, IDX4, IDX5, IDX6, IDX7, IDX8 };
+ 
++#ifdef CONFIG_CRYPTO_TRESOR
++/* Prevent the test manager from overwriting dbg regs with test keys */
++static int tresor_tests_locked = 1;
++
++void tresor_lock_tests(void) { tresor_tests_locked = 1; }
++EXPORT_SYMBOL(tresor_lock_tests);
++
++void tresor_unlock_tests(void) { tresor_tests_locked = 0; }
++EXPORT_SYMBOL(tresor_unlock_tests);
++
++int tresor_lock_status(void) { return tresor_tests_locked; }
++EXPORT_SYMBOL(tresor_lock_status);
++#endif
++
+ static void hexdump(unsigned char *buf, unsigned int len)
+ {
+ 	print_hex_dump(KERN_CONT, "", DUMP_PREFIX_OFFSET,
